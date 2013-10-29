@@ -8,16 +8,16 @@
 	var results = {};
 
 	function getStats(cb) {
-		// Load Timing from page
-		var load_timings = window.performance.timing;
-		results['load_time_ms'] = load_timings['loadEventStart'] - load_timings['navigationStart'];
-		results['dom_content_loaded_time_ms'] = load_timings['domContentLoadedEventStart'] - load_timings['navigationStart'];
-
 		// Smoothness Benchmarks
 		var stats = window.__RenderingStats();
 
 		stats.start();
 		var action = new __ScrollAction(function() {
+			// Load Timing from page
+			var load_timings = window.performance.timing;
+			results['load_time_ms'] = load_timings['loadEventStart'] - load_timings['navigationStart'];
+			results['dom_content_loaded_time_ms'] = load_timings['domContentLoadedEventStart'] - load_timings['navigationStart'];
+
 			stats.stop();
 			var rendering_stats_deltas = stats.getDeltas();
 			calcScrollResults(rendering_stats_deltas, results);
@@ -29,7 +29,7 @@
 		});
 
 		document.body.scrollTop = 1;
-		action.start(document.body.scrollTop === 1? document.body : document.documentElement)
+		action.start(document.body.scrollTop === 1 ? document.body : document.documentElement)
 	}
 
 	function calcFirstPaintTimeResults(results, cb) {
