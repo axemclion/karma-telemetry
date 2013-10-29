@@ -1,6 +1,13 @@
 (function(window) {
 	var createStartFn = function(tc, runnerPassedIn) {
 		return function() {
+			if (window.location == window.top.location){
+				// Need to do this since chrome does not show loadTimes() in iFrames
+				// So a new window is opened to calculate that time. Telemetry does not 
+				// have to run in that new window opened
+				window.__log__('Exiting same frame stats');
+				return;
+			}
 			var telemetry = runnerPassedIn || window.__telemetry__;
 			timer = new Date().getTime();
 
@@ -24,6 +31,7 @@
 							log: [],
 							time: data[key]
 						});
+						totalNumberOfTest++;
 					}
 				}
 
@@ -39,4 +47,6 @@
 	};
 
 	window.__karma__.start = createStartFn(window.__karma__);
+	window.__log__ = console.log;
+
 })(window);
