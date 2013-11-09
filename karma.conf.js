@@ -62,11 +62,11 @@ module.exports = function(config) {
         // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
         // - PhantomJS
         // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-        browsers: ['Firefox', 'chrome_perf', 'IE'],
+        browsers: ['Firefox', 'IE', 'Chrome_perf'],
         customLaunchers: {
-            chrome_perf: {
+            Chrome_perf: {
                 base: 'Chrome',
-                flags: ['--enable-gpu-benchmarking', '--enable-threaded-compositing']
+                flags: ['--disable-popup-blocking', '--enable-gpu-benchmarking', '--enable-threaded-compositing']
             }
         },
 
@@ -76,6 +76,6 @@ module.exports = function(config) {
 
         // Continuous Integration mode
         // if true, it capture browsers, run tests and exit
-        singleRun: true
+        singleRun: false
     });
 };

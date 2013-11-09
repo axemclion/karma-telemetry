@@ -6,15 +6,23 @@
 (function(window, undefined) {
 
 	var results = {};
+	var mozFirstPaintTime = null;
+
+	function mozPaintHandler() {
+		window.removeEventListener('MozAfterPaint', mozPaintHandler);
+		mozFirstPaintTime = new Date().getTime();
+	}
+	window.addEventListener('MozAfterPaint', mozPaintHandler, true);
 
 	function getStats(cb) {
 		// Smoothness Benchmarks
+		debugger;
 		var stats = window.__RenderingStats();
 
 		stats.start();
-		window.__log__('Starting scrolling action');
+		__log__('Starting scrolling action');
 		var action = new __ScrollAction(function() {
-			window.__log__('Scrolling action completed');
+			__log__('Scrolling action completed');
 			// Load Timing from page
 			var load_timings = window.performance.timing;
 			results['load_time_ms'] = load_timings['loadEventStart'] - load_timings['navigationStart'];
@@ -26,7 +34,6 @@
 			calcTextureUploadResults(rendering_stats_deltas, results);
 			calcImageDecodingResults(rendering_stats_deltas, results);
 			calcFirstPaintTimeResults(results, function() {
-				window.__log__('Got First paint results, now exiting');
 				cb(results);
 			});
 		});
@@ -38,30 +45,21 @@
 	function calcFirstPaintTimeResults(results, cb) {
 		results['first_paint'] = null;
 		if (typeof window.chrome !== 'undefined') {
-			if (window.location != window.top.location) {
-				window.__log__('Need to open a')
-				var w = window.open(window.location);
-				if (w) {
-					window.__log__("Window opened")
-					w.onload = function() {
-						window.__log__("Loaded on Window")
-						w.setTimeout(function() {
-							window.__log__('Now startin to read the values')
-							var loadTimes = w.chrome.loadTimes();
-							results['first_paint'] = (loadTimes.firstPaintTime - loadTimes.startLoadTime) * 1000;
-							window.__log__(loadTimes.firstPaintTime, loadTimes.startLoadTime);
-							w.close();
-							cb();
-						}, 1000);
-					}
-				} else {
-					cb();
-				}
-			}
-		} else if (window.performance.timing.msFirstPaint) {
-			results['first_paint'] = window.performance.timing.msFirstPaint - window.performance.timing.navigationStart;
+			window.webkitRequestAnimationFrame(function() {
+				var first_paint_secs = window.chrome.loadTimes().firstPaintTime - window.chrome.loadTimes().startLoadTime;
+				results['first_paint'] = first_paint_secs * 1000;
+				cb();
+			});
+		} else if (typeof window.performance.timing.msFirstPaint !== 'undefined') {
+			window.setTimeout(function() {
+				results['first_paint'] = window.performance.timing.msFirstPaint - window.performance.timing.navigationStart;
+				cb();
+			}, 1000);
+		} else if (mozFirstPaintTime !== null) {
+			results['first_paint'] = mozFirstPaintTime - window.performance.timing.navigationStart;
 			cb();
 		} else {
+			__log__('Did not recognize browser to calculated');
 			cb();
 		}
 	}

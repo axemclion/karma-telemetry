@@ -8,7 +8,7 @@ var css = {
 	'backgroundColor': '#840b2a'
 };
 
-for (var i = 0; i < 1000; i++) {
+for (var i = 0; i < 10; i++) {
 	var x = document.createElement('div');
 	for (var key in css) {
 		x.style[key] = css[key];
