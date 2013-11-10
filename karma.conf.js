@@ -62,13 +62,7 @@ module.exports = function(config) {
         // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
         // - PhantomJS
         // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-        browsers: ['Firefox', 'IE', 'Chrome_perf'],
-        customLaunchers: {
-            Chrome_perf: {
-                base: 'Chrome',
-                flags: ['--disable-popup-blocking', '--enable-gpu-benchmarking', '--enable-threaded-compositing']
-            }
-        },
+        browsers: ['FirefoxPerf', 'ChromePerf'],
 
         // If browser does not capture in given timeout [ms], kill it
         captureTimeout: 60000,
