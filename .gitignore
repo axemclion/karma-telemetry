@@ -1,2 +1,4 @@
 test-results.xml
+test-results/
 node_modules/
+npm-debug.log

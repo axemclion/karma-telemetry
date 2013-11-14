@@ -11,9 +11,6 @@ module.exports = function(config) {
         // frameworks to use
         plugins: [
             require('./'),
-            'karma-chrome-launcher',
-            'karma-ie-launcher',
-            'karma-firefox-launcher',
             'karma-junit-reporter'
         ],
 
@@ -62,7 +59,7 @@ module.exports = function(config) {
         // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
         // - PhantomJS
         // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-        browsers: ['FirefoxPerf', 'ChromePerf'],
+        browsers: ['ChromePerf', 'FirefoxPerf'],
 
         // If browser does not capture in given timeout [ms], kill it
         captureTimeout: 60000,
