@@ -21,7 +21,9 @@
     "grunt-karma": "~0.6.2",
     "grunt": "~0.4.1",
     "load-grunt-tasks": "~0.2.0",
-    "karma-junit-reporter": "~0.1.0"
+    "karma-junit-reporter": "~0.1.0",
+    "karma-sauce-launcher": "axemclion/karma-sauce-launcher",
+    "firefox-profile": "axemclion/firefox-profile-js"
   },
   "peerDependencies": {
     "karma": ">=0.9",

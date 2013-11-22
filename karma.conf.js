@@ -2,6 +2,12 @@
 // Generated on Sun Oct 27 2013 19:11:55 GMT-0700 (Pacific Daylight Time)
 
 module.exports = function(config) {
+    var FirefoxProfile = require('firefox-profile');
+    var fp = new FirefoxProfile();
+    fp.setPreference('dom.send_after_paint_to_content', true);
+    fp.setPreference('dom.disable_open_during_load', false);
+    fp.updatePreferences();
+
     config.set({
 
         // base path, that will be used to resolve files and exclude
@@ -11,7 +17,8 @@ module.exports = function(config) {
         // frameworks to use
         plugins: [
             require('./'),
-            'karma-junit-reporter'
+            'karma-junit-reporter',
+            'karma-sauce-launcher'
         ],
 
         frameworks: ['telemetry'],
@@ -59,7 +66,30 @@ module.exports = function(config) {
         // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
         // - PhantomJS
         // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-        browsers: ['FirefoxPerf', 'ChromePerf'],
+        browsers: ['FirefoxPerf', 'ChromePerf', /* 'sl_chrome', 'sl_firefox'*/ ],
+        customLaunchers: {
+            sl_chrome: {
+                base: 'SauceLabs',
+                browserName: 'chrome',
+                chromeOptions: {
+                    args: ['--enable-gpu-benchmarking', '--disable-popup-blocking', '--enable-thread-composting']
+                },
+                'disable-popup-handler': true
+            },
+            sl_firefox: {
+                base: 'SauceLabs',
+                browserName: 'firefox',
+                firefox_profile: fp.encodedSync(),
+                'disable-popup-handler': true
+            }
+        },
+        sauceLabs: {
+            username: process.env.SAUCE_USERNAME,
+            accessKey: process.env.SAUCE_ACCESS_KEY,
+            startConnect: true,
+            testName: 'Karma-telemetry tests'
+        },
+
 
         // If browser does not capture in given timeout [ms], kill it
         captureTimeout: 60000,
@@ -67,6 +97,6 @@ module.exports = function(config) {
 
         // Continuous Integration mode
         // if true, it capture browsers, run tests and exit
-        singleRun: false
+        singleRun: true
     });
 };
