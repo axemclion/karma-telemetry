@@ -1,6 +1,6 @@
 {
   "name": "karma-telemetry",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Running Telemetry Performance test suite using Karma",
   "main": "lib/index.js",
   "directories": {
