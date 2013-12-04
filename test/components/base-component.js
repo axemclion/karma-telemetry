@@ -13,3 +13,12 @@ for (var i = 0; i < 10; i++) {
 	}
 	document.body.appendChild(x);
 }
+
+// Testing if Chrome was loaded with the required flags
+if (window.chrome) {
+	console.log('Extension:' + typeof window.chrome.gpuBenchmarking);
+}
+
+window.addEventListener('MozAfterPaint', function() {
+	console.log('Extension:true');
+}, true);

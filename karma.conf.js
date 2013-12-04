@@ -2,12 +2,6 @@
 // Generated on Sun Oct 27 2013 19:11:55 GMT-0700 (Pacific Daylight Time)
 
 module.exports = function(config) {
-    var FirefoxProfile = require('firefox-profile');
-    var fp = new FirefoxProfile();
-    fp.setPreference('dom.send_after_paint_to_content', true);
-    fp.setPreference('dom.disable_open_during_load', false);
-    fp.updatePreferences();
-
     config.set({
 
         // base path, that will be used to resolve files and exclude
@@ -18,14 +12,18 @@ module.exports = function(config) {
         plugins: [
             require('./'),
             'karma-junit-reporter',
-            'karma-sauce-launcher'
+            'karma-sauce-launcher',
+            'karma-chrome-launcher',
+            'karma-ie-launcher',
+            'karma-firefox-launcher',
+            'karma-opera-launcher'
         ],
 
         frameworks: ['telemetry'],
 
         // list of files / patterns to load in the browser
         files: [
-            'test/*.js'
+            'test/components/*.js'
         ],
 
 
@@ -34,12 +32,11 @@ module.exports = function(config) {
 
         ],
 
-
         // test results reporter to use
         // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
         reporters: ['junit', 'progress'],
         junitReporter: {
-            outputFile: 'test-results.xml',
+            outputFile: 'test-results/test-results.xml',
             suite: ''
         },
 
@@ -66,9 +63,27 @@ module.exports = function(config) {
         // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
         // - PhantomJS
         // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-        browsers: ['FirefoxPerf', 'ChromePerf', /* 'sl_chrome', 'sl_firefox'*/ ],
+        browsers: [
+            'firefox_perf',
+            'chrome_perf',
+            'IE',
+            //'Opera',
+            //'sl_chrome',
+            //'sl_firefox',
+        ],
         customLaunchers: {
-            sl_chrome: {
+            chrome_perf: {
+                base: 'Chrome',
+                flags: ['--disable-popup-blocking', '--enable-gpu-benchmarking', '--enable-threaded-compositing']
+            },
+            firefox_perf: {
+                base: 'Firefox',
+                prefs: {
+                    'dom.send_after_paint_to_content': true,
+                    'dom.disable_open_during_load': false
+                }
+            },
+            sauce_chrome: {
                 base: 'SauceLabs',
                 browserName: 'chrome',
                 chromeOptions: {
@@ -76,10 +91,17 @@ module.exports = function(config) {
                 },
                 'disable-popup-handler': true
             },
-            sl_firefox: {
+            sauce_firefox: {
                 base: 'SauceLabs',
                 browserName: 'firefox',
-                firefox_profile: fp.encodedSync(),
+                firefox_profile: (function() {
+                    var FirefoxProfile = require('firefox-profile');
+                    var fp = new FirefoxProfile();
+                    fp.setPreference('dom.send_after_paint_to_content', true);
+                    fp.setPreference('dom.disable_open_during_load', false);
+                    fp.updatePreferences();
+                    return fp.encodedSync();
+                }()),
                 'disable-popup-handler': true
             }
         },
@@ -93,7 +115,6 @@ module.exports = function(config) {
 
         // If browser does not capture in given timeout [ms], kill it
         captureTimeout: 60000,
-
 
         // Continuous Integration mode
         // if true, it capture browsers, run tests and exit

@@ -16,7 +16,6 @@
 
 	function getStats(cb) {
 		// Smoothness Benchmarks
-		debugger;
 		var stats = window.__RenderingStats();
 
 		stats.start();
