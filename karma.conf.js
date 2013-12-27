@@ -19,8 +19,6 @@ module.exports = function(config) {
             'karma-opera-launcher'
         ],
 
-        frameworks: ['telemetry'],
-
         // list of files / patterns to load in the browser
         files: [
             'test/components/*.js'
@@ -32,13 +30,6 @@ module.exports = function(config) {
 
         ],
 
-        // test results reporter to use
-        // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-        reporters: ['junit', 'progress'],
-        junitReporter: {
-            outputFile: 'test-results/test-results.xml',
-            suite: ''
-        },
 
         // web server port
         port: 9876,
@@ -54,6 +45,26 @@ module.exports = function(config) {
         // enable / disable watching file and executing tests whenever any file changes
         autoWatch: true,
 
+        // If browser does not capture in given timeout [ms], kill it
+        captureTimeout: 60000,
+
+        // Continuous Integration mode
+        // if true, it capture browsers, run tests and exit
+        singleRun: false,
+
+        /************************************************************************************************\
+        |*     Reuse the KARMA CONFIGURATION below this bannerfor running karma-telemetry               *|
+        \************************************************************************************************/
+
+        frameworks: ['telemetry'],
+
+        // test results reporter to use
+        // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
+        reporters: ['junit', 'progress'],
+        junitReporter: {
+            outputFile: 'test-results/test-results.xml',
+            suite: ''
+        },
 
         // Start these browsers, currently available:
         // - Chrome
@@ -66,7 +77,7 @@ module.exports = function(config) {
         browsers: [
             'firefox_perf',
             'chrome_perf',
-            'IE',
+            // 'IE',
             //'Opera',
             //'sl_chrome',
             //'sl_firefox',
@@ -112,12 +123,9 @@ module.exports = function(config) {
             testName: 'Karma-telemetry tests'
         },
 
-
-        // If browser does not capture in given timeout [ms], kill it
-        captureTimeout: 60000,
-
-        // Continuous Integration mode
-        // if true, it capture browsers, run tests and exit
-        singleRun: true
+        // All performance tests need to start 
+        client: {
+            useIframe: false
+        }
     });
 };

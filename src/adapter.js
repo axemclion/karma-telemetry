@@ -3,57 +3,46 @@
 		console.log.apply(console, arguments);
 	};
 
-	var emitTelemetryResults = function(tc, win) {
-		return function(data, timer) {
-			win.close();
-			var totalNumberOfTest = 0,
-				timer = null;
-			if (typeof data === 'undefined') {
-				tc.result({
-					description: 'Tests Failed',
-					suite: [],
-					success: false,
-					log: [],
-					time: new Date().getTime() - timer
-				})
-			} else {
-				for (var key in data) {
-					tc.result({
-						description: key,
-						suite: [],
-						success: true,
-						log: [],
-						time: data[key]
-					});
-					totalNumberOfTest++;
-				}
-			}
-			tc.info({
-				total: totalNumberOfTest
-			});
-			tc.complete({
-				coverage: window.__coverage__
+	var getResults = function(data) {
+		if (!data) {
+			return [];
+		}
+		var results = [];
+		for (var key in data) {
+			results.push({
+				description: key,
+				suite: [],
+				success: true,
+				log: [],
+				time: data[key]
 			});
 		}
+		return results;
 	}
 
 	var createStartFn = function(tc, runnerPassedIn) {
 		return function() {
-			var origin = window.location.protocol + '//' + window.location.host + '/'
-			var win = window.open(origin + 'debug.html');
-			window.emitTelemetryResults = emitTelemetryResults(tc, win);
+
+			var runner = runnerPassedIn || window.__telemetry__;
+			var timer = new Date().getTime();
+			if (window.location !== top.location) {
+				throw new Error('Cannot run telemetry inside an iframe. Add "client: {useIframe: true}" in the karma configuration to open it in a new window');
+			}
+
+			runner(function(data) {
+				var results = getResults(data);
+				tc.info({
+					total: results.length
+				});
+				for (var i = 0; i < results.length; i++) {
+					tc.result(results[i]);
+				}
+				tc.complete({
+					coverage: window.__coverage__
+				});
+			});
 		}
 	};
 
-	if (window.location != window.top.location) {
-		window.__karma__.start = createStartFn(window.__karma__);
-	} else {
-		document.addEventListener('load', function() {
-			var timer = new Date().getTime();
-			window.__telemetry__(function(data) {
-				window.opener.emitTelemetryResults(data, timer);
-			});
-		}, true);
-	}
-
+	window.__karma__.start = createStartFn(window.__karma__);
 })(window);

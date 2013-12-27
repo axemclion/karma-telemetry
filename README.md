@@ -38,25 +38,82 @@ Since this is a Karma framework, you would need to use the [Karma](http://karma-
 
 
 ### Configuration
-Following code shows the default configuration...
+Following code shows the default configuration.
 
 ```js
 // karma.conf.js
 module.exports = function(config) {
   config.set({
-    frameworks: ['karma-telemetry'],
-    browsers: ['ChromePerf', 'FirefoxPerf', 'IE'],
+    // This is the name of the framework for running telemetry
+    frameworks: ['telemetry'],
+
+    // We need to open the test cases in a new window instead of an iFrame
+    // To be able to record the paint times accurately 
+    client: {
+      useIframe: false
+    }
+
+    // Each test case represents a rendering metric.
+    // The Junit reporter can be used to see times of individual metrics
     reporters: ['junit', 'progress'],
-    files: [
-      'tests/*.js'
-    ]
+    junitReporter: {
+      outputFile: 'test-results/test-results.xml',
+      suite: ''
+    },
+
+    // To enable more accurate rendering benchmarking, firefox and chrome have to be started with special flags. 
+    // Other browsers can be started normally
+    browsers: [
+      'firefox_perf',
+      'chrome_perf'
+    ],
+    customLaunchers: {
+      chrome_perf: {
+        base: 'Chrome',
+        flags: ['--disable-popup-blocking', '--enable-gpu-benchmarking', '--enable-threaded-compositing']
+      },
+      firefox_perf: {
+        base: 'Firefox',
+        prefs: {
+          'dom.send_after_paint_to_content': true,
+          'dom.disable_open_during_load': false
+        }
+      },
+
+      // Browsers on Saucelabs also need the following configuration
+      sauce_chrome: {
+        base: 'SauceLabs',
+        browserName: 'chrome',
+        chromeOptions: {
+          args: ['--enable-gpu-benchmarking', '--disable-popup-blocking', '--enable-thread-composting']
+        },
+        'disable-popup-handler': true
+      },
+
+      // In case of firefox, remember to install the firefox profile creator. 
+      // This is a modified version of the firefox-profile-js with a Synchronous method and can be installed using
+      // $ npm install axemclion/firefox-profile-js
+      sauce_firefox: {
+        base: 'SauceLabs',
+        browserName: 'firefox',
+        firefox_profile: (function() {
+          // Note that the firefox-profile module is 
+          var FirefoxProfile = require('firefox-profile');
+          var fp = new FirefoxProfile();
+          fp.setPreference('dom.send_after_paint_to_content', true);
+          fp.setPreference('dom.disable_open_during_load', false);
+          fp.updatePreferences();
+          return fp.encodedSync();
+        }()),
+        'disable-popup-handler': true
+      }
+    },
   });
 };
 ```
 
-Note that you need the `junit` reporter for seeing the test results. The framework also uses `ChromePerf` and `FirefoxPerf` as the browsers as they are regular browsers started with additional flags to enable popups and collect performance data. 
+In case of using Firefox on saucelabs, remember to install the firefox profile generator using `npm install axemclion/firefox-profile-js`. You can look at the project's karma.conf.js for a full configuration
 
 ### Writing tests
 Note that Karma adds all the Javascript test files into a single HTML file for testing. It is ideal to test one component at a time and hence it may be better to dynamically generate a karma configuration for each test case. In case of grunt, look at the defination of the test task in `Gruntfile.js`. 
 The test case should append the component to the document body sufficient number of times to allow the page to scroll. Look at `test/test.js` for an example. 
-
