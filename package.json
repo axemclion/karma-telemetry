@@ -1,6 +1,6 @@
 {
   "name": "karma-telemetry",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Running Telemetry Performance test suite using Karma",
   "main": "lib/index.js",
   "directories": {
@@ -34,5 +34,8 @@
     "karma-opera-launcher": "~0.1.x",
     "karma-chrome-launcher": "~0.1.x",
     "karma-firefox-launcher": "~0.1.x"
+  },
+  "peerDependencies": {
+    "karma": ">=0.11.0"
   }
 }
