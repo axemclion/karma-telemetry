@@ -17,7 +17,7 @@ It can be used for [Topcoat](http://topcoat.io) components to generate graphs li
 
 ## Installation
 
-The easiest way is to keep `karma-qunit` as a devDependency in your `package.json`.
+The easiest way is to keep `karma-telemetry` as a devDependency in your `package.json`.
 
 ```json
 {
