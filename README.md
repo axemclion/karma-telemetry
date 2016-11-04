@@ -51,7 +51,7 @@ module.exports = function(config) {
     // To be able to record the paint times accurately 
     client: {
       useIframe: false
-    }
+    },
 
     // Each test case represents a rendering metric.
     // The Junit reporter can be used to see times of individual metrics
